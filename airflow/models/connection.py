@@ -292,3 +292,11 @@ class Connection(Base, LoggingMixin):
                 self.log.error("Failed parsing the json for conn_id %s", self.conn_id)
 
         return obj
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'pool': self.pool,
+            'slots': self.slots,
+            'description': self.description,
+        }

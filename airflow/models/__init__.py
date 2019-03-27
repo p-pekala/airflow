@@ -4331,6 +4331,12 @@ class Variable(Base, LoggingMixin):
         if self._val and self.is_encrypted:
             self._val = fernet.rotate(self._val.encode('utf-8')).decode()
 
+    def to_json(self):
+        return {
+            'key': self.key,
+            'value': self.get_val()
+        }
+
 
 class DagRun(Base, LoggingMixin):
     """

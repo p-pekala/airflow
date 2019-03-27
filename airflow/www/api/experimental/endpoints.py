@@ -19,6 +19,8 @@
 import airflow.api
 from airflow.api.common.experimental import delete_dag as delete
 from airflow.api.common.experimental import pool as pool_api
+from airflow.api.common.experimental import variable as variable_api
+from airflow.api.common.experimental import connection as connection_api
 from airflow.api.common.experimental import trigger_dag as trigger
 from airflow.api.common.experimental.get_dag_runs import get_dag_runs
 from airflow.api.common.experimental.get_task import get_task
@@ -350,3 +352,129 @@ def delete_pool(name):
         return response
     else:
         return jsonify(pool.to_json())
+
+
+@api_experimental.route('/connections/<string:id>', methods=['GET'])
+@requires_authentication
+def get_connection(id):
+    """Get connection by a given name."""
+    try:
+        connection = connection_api.get_connection(id=id)
+    except AirflowException as err:
+        _log.error(err)
+        response = jsonify(error="{}".format(err))
+        response.status_code = err.status_code
+        return response
+    else:
+        return jsonify(connection.to_json())
+
+
+@api_experimental.route('/connections', methods=['GET'])
+@requires_authentication
+def get_connections():
+    """Get all connection."""
+    try:
+        connections = connection_api.get_connection()
+    except AirflowException as err:
+        _log.error(err)
+        response = jsonify(error="{}".format(err))
+        response.status_code = err.status_code
+        return response
+    else:
+        return jsonify([c.to_json() for c in connections])
+
+
+@csrf.exempt
+@api_experimental.route('/connections', methods=['POST'])
+@requires_authentication
+def create_variable():
+    """Create a connection."""
+    params = request.get_json(force=True)
+    try:
+        connection = connection_api.create_connection(**params)
+    except AirflowException as err:
+        _log.error(err)
+        response = jsonify(error="{}".format(err))
+        response.status_code = err.status_code
+        return response
+    else:
+        return jsonify(connection.to_json())
+
+
+@csrf.exempt
+@api_experimental.route('/connections/<string:id>', methods=['DELETE'])
+@requires_authentication
+def delete_variable(id):
+    """Delete connection."""
+    try:
+        connection = connection_api.delete_connection(id=id)
+    except AirflowException as err:
+        _log.error(err)
+        response = jsonify(error="{}".format(err))
+        response.status_code = err.status_code
+        return response
+    else:
+        return jsonify(connection.to_json())
+
+
+@api_experimental.route('/variables/<string:key>', methods=['GET'])
+@requires_authentication
+def get_variable(key):
+    """Get variable by a given name."""
+    try:
+        variable = variable_api.get_variable(key=key)
+    except AirflowException as err:
+        _log.error(err)
+        response = jsonify(error="{}".format(err))
+        response.status_code = err.status_code
+        return response
+    else:
+        return jsonify(variable.to_json())
+
+
+@api_experimental.route('/variables', methods=['GET'])
+@requires_authentication
+def get_variables():
+    """Get all variables."""
+    try:
+        variables = variable_api.get_variables()
+    except AirflowException as err:
+        _log.error(err)
+        response = jsonify(error="{}".format(err))
+        response.status_code = err.status_code
+        return response
+    else:
+        return jsonify([v.to_json() for v in variables])
+
+
+@csrf.exempt
+@api_experimental.route('/variables', methods=['POST'])
+@requires_authentication
+def create_variable():
+    """Create a variable."""
+    params = request.get_json(force=True)
+    try:
+        variable = variable_api.create_variable(**params)
+    except AirflowException as err:
+        _log.error(err)
+        response = jsonify(error="{}".format(err))
+        response.status_code = err.status_code
+        return response
+    else:
+        return jsonify(variable.to_json())
+
+
+@csrf.exempt
+@api_experimental.route('/variables/<string:key>', methods=['DELETE'])
+@requires_authentication
+def delete_variable(key):
+    """Delete variable."""
+    try:
+        variable = variable_api.delete_variable(key=key)
+    except AirflowException as err:
+        _log.error(err)
+        response = jsonify(error="{}".format(err))
+        response.status_code = err.status_code
+        return response
+    else:
+        return jsonify(variable.to_json())

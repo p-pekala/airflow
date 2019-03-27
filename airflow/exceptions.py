@@ -112,6 +112,13 @@ class PoolNotFound(AirflowNotFoundException):
     """Raise when a Pool is not available in the system"""
     pass
 
+class VariableNotFound(AirflowNotFoundException):
+    """Raise when a Variable is not available in the system"""
+    pass
+
+class ConnectionNotFound(AirflowNotFoundException):
+    """Raise when a Connection is not available in the system"""
+    pass
 
 class NoAvailablePoolSlot(AirflowException):
     """Raise when there is not enough slots in pool"""
